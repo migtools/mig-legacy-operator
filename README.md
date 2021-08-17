@@ -1,4 +1,7 @@
 # Crane Legacy Operator
+[![Publish Image](https://github.com/konveyor/mig-legacy-operator/actions/workflows/publish.yml/badge.svg)](https://github.com/konveyor/mig-legacy-operator/actions/workflows/publish.yml)
+[![Molecule](https://github.com/konveyor/mig-legacy-operator/actions/workflows/molecule.yml/badge.svg)](https://github.com/konveyor/mig-legacy-operator/actions/workflows/molecule.yml)
+
 Crane Legacy Operator (mig-legacy-operator) performs an install of basic components for enabling migrations from old versions of OpenShift.
 
 This operator should be used for versions older than 4.6.
