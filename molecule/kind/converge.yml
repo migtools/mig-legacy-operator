@@ -48,7 +48,9 @@
       k8s:
         state: absent
         namespace: '{{ controller_namespace }}'
-        definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yml'])) }}"
+        name: 'migration-operator'
+        api_version: 'apps/v1'
+        kind: 'deployment'
       register: delete_deployment
       when: hostvars[groups.k8s.0].build_cmd.changed
 
