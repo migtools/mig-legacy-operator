@@ -78,7 +78,7 @@
 
     - name: Copy operator.yml
       copy:
-        src: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy/non-olm/operator.yml"
+        src: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy/operator.yml"
         dest: "{{ tmp_dir.path }}/operator.yml"
 
     - name: Update Pull Policy so we use the image we just finished building
