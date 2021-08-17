@@ -70,28 +70,10 @@
         regexp: '^(.*)image:( *)quay.io/ocpmigrate/mig-operator(.*)$'
         replace: "\\1image:\\2{{ test_image }}"
 
-    - name: Create RBAC
-      k8s:
-        definition: "{{ lookup('template', item) }}"
-      with_items:
-      - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/roles/migrationcontroller/templates/mig_rbac.yml.j2"
-      - "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/roles/migrationcontroller/templates/velero_supporting.yml.j2"
-    - name: Make temp directory
-      tempfile:
-        state: directory
-        suffix: operator
-      register: tmp_dir
-
     - name: Copy operator.yml
       copy:
         src: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy/non-olm/operator.yml"
         dest: "{{ tmp_dir.path }}/operator.yml"
-
-    - name: Update Deployment
-      lineinfile:
-        path: "{{ tmp_dir.path }}/operator.yml"
-        regexp: 'apiVersion: apps/v1beta1'
-        line: 'apiVersion: apps/v1'
 
     - name: Update Pull Policy so we use the image we just finished building
       lineinfile:
