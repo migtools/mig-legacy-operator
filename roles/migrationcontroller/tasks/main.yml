@@ -2,6 +2,10 @@
 - set_fact:
     api_groups: "{{ lookup('k8s', cluster_info='api_groups') }}"
 
+- set_fact:
+    restic_pv_host_path: /var/lib/origin/openshift.local.volumes/pods
+  when: lookup('k8s', cluster_info='version').kubernetes.minor|replace('+', '')|int < 12
+
 - block:
   - k8s:
       state: "present"
