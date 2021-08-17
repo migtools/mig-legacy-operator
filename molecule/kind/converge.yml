@@ -70,6 +70,12 @@
         regexp: '^(.*)image:( *)quay.io/ocpmigrate/mig-operator(.*)$'
         replace: "\\1image:\\2{{ test_image }}"
 
+    - name: Make temp directory
+      tempfile:
+        state: directory
+        suffix: operator
+      register: tmp_dir
+
     - name: Copy operator.yml
       copy:
         src: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy/non-olm/operator.yml"
