@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    control-plane: controller-manager
+    controller-tools.k8s.io: "1.0"
+  name: migration-cluster-config
+  namespace: {{ mig_namespace }}
+data:
+  STAGE_IMAGE: "{{ migration_stage_image_fqin }}"
+  REGISTRY_IMAGE: "{{ migration_registry_image_fqin }}"
+  RSYNC_TRANSFER_IMAGE: "{{ rsync_transfer_image_fqin }}"
+  RSYNC_PRIVILEGED: "{{ migration_rsync_privileged }}"
+  CLUSTER_SUBDOMAIN: "{{ cluster_subdomain }}"
+  OPERATOR_VERSION: "{{ mig_operator_version }}"
+{% if migration_registry_readiness_timeout is defined %}
+  REGISTRY_READINESS_TIMEOUT: "{{ migration_registry_readiness_timeout }}"
+{% endif %}
+{% if migration_registry_liveness_timeout is defined %}
+  REGISTRY_LIVENESS_TIMEOUT: "{{ migration_registry_liveness_timeout }}"
+{% endif %}
+
