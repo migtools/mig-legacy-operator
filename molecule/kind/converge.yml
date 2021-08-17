@@ -54,12 +54,10 @@
 
     - name: Wait 30s for Operator Deployment to terminate
       k8s_info:
-        api_version: '{{ definition.apiVersion }}'
-        kind: '{{ definition.kind }}'
+        api_version: 'apps/v1'
+        kind: 'deployment'
         namespace: '{{ controller_namespace }}'
-        name: '{{ definition.metadata.name }}'
-      vars:
-        definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yml'])) | from_yaml }}"
+        name: 'migration-operator'
       register: deployment
       until: not deployment.resources
       delay: 3
