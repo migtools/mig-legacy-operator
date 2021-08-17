@@ -143,11 +143,9 @@
     - name: get operator logs
       ignore_errors: yes
       failed_when: false
-      command: kubectl logs deployment/{{ definition.metadata.name }} -n {{ controller_namespace }}
+      command: kubectl logs deployment/migration-operator -n {{ controller_namespace }}
       environment:
         KUBECONFIG: '{{ lookup("env", "KUBECONFIG") }}'
-      vars:
-        definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yml'])) | from_yaml }}"
       register: log
 
     - debug: var=log.stdout_lines
