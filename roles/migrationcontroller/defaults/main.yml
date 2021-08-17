@@ -62,4 +62,4 @@ velero_azure_plugin_version: "{{ snapshot_tag | default(lookup( 'env', 'VELERO_A
 velero_azure_plugin_fqin: "{{ velero_azure_plugin_image }}:{{ velero_azure_plugin_version }}"
 velero_state: absent
 velero_qps: 100
-azure_resource_group:velero_burst: 1000
+velero_burst: 1000
