@@ -6,7 +6,7 @@ Crane Legacy Operator (mig-legacy-operator) performs an install of basic compone
 
 This operator should be used for versions older than 4.6.
 
-For newer versions and documentation see [mig-operator](https://github.com/konveyor/mig-operator)
+For newer versions and documentation see [Crane Operator](https://github.com/konveyor/mig-operator)
 
 # Installation
 ```
