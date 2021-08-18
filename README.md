@@ -11,5 +11,4 @@ For newer versions and documentation see [Crane Operator](https://github.com/kon
 # Installation
 ```
 oc create -f https://raw.githubusercontent.com/konveyor/mig-legacy-operator/main/deploy/operator.yml
-oc create -f https://raw.githubusercontent.com/konveyor/mig-legacy-operator/main/deploy/controller.yml
 ```
