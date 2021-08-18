@@ -148,6 +148,11 @@
       definition: "{{ lookup('template', 'velero.yml.j2') }}"
       merge_type: merge
 
+  - name: "Set up mig controller RBAC"
+    k8s:
+      state: present
+      definition: "{{ lookup('template', 'mig_rbac.yml.j2') }}"
+
   # Create custom SCC for all clusters. For <3.11 scc.users fields will drive the
   # behavior, for others, RBAC will.
   - name: "Set up rsync-anyuid SCC"
