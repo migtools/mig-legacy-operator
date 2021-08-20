@@ -1,16 +1,84 @@
 ---
+azure_resource_group: ""
+configmap_secret: ""
+controller_state: absent
+deprecated_cors_configuration: false
+cors_origins: []
+disable_image_migration: false
+disable_image_copy: false
+disable_pv_migration: false
+excluded_resources:
+  - imagetags
+  - templateinstances
+  - clusterserviceversions
+  - packagemanifests
+  - subscriptions
+  - servicebrokers
+  - servicebindings
+  - serviceclasses
+  - serviceinstances
+  - serviceplans
+  - operatorgroups
+  - events
 proxy_secret_name: "migration-proxy"
 http_proxy: "{{ lookup( 'env', 'HTTP_PROXY') }}"
 https_proxy: "{{ lookup( 'env', 'HTTPS_PROXY') }}"
 no_proxy: "{{ lookup( 'env', 'NO_PROXY') }}"
+stunnel_tcp_proxy: ""
+stunnel_verify_ca: true
+stunnel_verify_ca_level: "2"
 image_pull_policy: Always
 cluster_subdomain: ""
 rsync_transfer_image: "{{ registry }}/{{ project }}/{{ rsync_transfer_repo }}"
 rsync_transfer_repo: "{{ lookup( 'env', 'RSYNC_TRANSFER_REPO') }}"
 rsync_transfer_version: "{{ snapshot_tag | default(lookup( 'env', 'RSYNC_TRANSFER_TAG')) }}"
 rsync_transfer_image_fqin: "{{ rsync_transfer_image }}:{{ rsync_transfer_version }}"
-mig_operator_version: "latest"
+source_rsync_pod_cpu_limits: "1"
+source_rsync_pod_memory_limits: "1Gi"
+source_rsync_pod_cpu_requests: "400m"
+source_rsync_pod_memory_requests: "1Gi"
+stunnel_pod_cpu_limits: '1'
+stunnel_pod_cpu_requests: '400m'
+stunnel_pod_memory_limits: '1Gi'
+stunnel_pod_memory_requests: '1Gi'
+target_rsync_pod_cpu_limits: '1'
+target_rsync_pod_cpu_requests: '400m'
+target_rsync_pod_memory_limits: '1Gi'
+target_rsync_pod_memory_requests: '1Gi'
+enable_dvm_pv_resizing: false
+hook_runner_image: "{{ registry }}/{{ project }}/{{ hook_runner_repo }}"
+hook_runner_repo: "{{ lookup( 'env', 'HOOK_RUNNER_REPO') }}"
+hook_runner_version: "{{ snapshot_tag | default(lookup( 'env', 'HOOK_RUNNER_TAG')) }}"
+hook_runner_image_fqin: "{{ hook_runner_image }}:{{ hook_runner_version }}"
+jaeger_enabled: "false"
+mig_controller_image: "{{ registry }}/{{ project }}/{{ mig_controller_repo }}"
+mig_controller_limits_cpu: "1"
+mig_controller_limits_memory: "10Gi"
+mig_controller_repo: "{{ lookup( 'env', 'MIG_CONTROLLER_REPO') }}"
+mig_controller_requests_cpu: "100m"
+mig_controller_requests_memory: "350Mi"
+mig_controller_version: "{{ snapshot_tag | default(lookup( 'env', 'MIG_CONTROLLER_TAG')) }}"
+mig_controller_image_fqin: "{{ mig_controller_image }}:{{ mig_controller_version }}"
+mig_controller_enable_cache: false
+discovery_collect_events: true
+discovery_volume_path: "/var/cache/discovery"
+mig_operator_version: "1.5.1"
+mig_pv_move_storageclasses: []
+mig_pv_limit: "100"
+mig_pod_limit: "100"
+mig_namespace_limit: "10"
 mig_namespace: "{{ lookup( 'env', 'WATCH_NAMESPACE') | default('openshift-migration') }}"
+mig_ui_cluster_api_endpoint: ""
+mig_ui_configmap_data: ""
+mig_ui_configmap_name: mig-ui-config
+mig_ui_config_namespace: openshift-migration
+mig_ui_image: "{{ registry }}/{{ project }}/{{ mig_ui_repo }}"
+mig_ui_oauth_user_scope: "user:full"
+mig_ui_oauth_redirect_url: ""
+mig_ui_oauth_secret: ""
+mig_ui_repo: "{{ lookup( 'env', 'MIG_UI_REPO') }}"
+mig_ui_version: "{{ snapshot_tag | default(lookup( 'env', 'MIG_UI_TAG')) }}"
+mig_ui_image_fqin: "{{ mig_ui_image }}:{{ mig_ui_version }}"
 log_reader_state: absent
 mig_log_reader_repo: "{{ lookup( 'env', 'MIG_LOG_READER_REPO') }}"
 mig_log_reader_image: "{{ registry }}/{{ project }}/{{ mig_log_reader_repo }}"
@@ -32,6 +100,7 @@ project: "{{ lookup( 'env', 'PROJECT') }}"
 restic_pv_host_path: /var/lib/kubelet/pods
 restic_timeout: 1h
 restic_supplemental_groups: []
+ui_state: absent
 velero_aws_secret_name: cloud-credentials
 velero_gcp_secret_name: gcp-cloud-credentials
 velero_azure_secret_name: azure-cloud-credentials

@@ -1,0 +1,77 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: migration-ui
+  namespace: "{{ mig_namespace }}"
+  labels:
+    app: migration
+    service: migration-ui
+spec:
+  ports:
+    - name: port-9000
+      port: 9000
+      targetPort: 9000
+      protocol: TCP
+  selector:
+    app: migration
+    service: migration-ui
+---
+{% if lookup('k8s', cluster_info='version').kubernetes.minor|replace('+', '')|int < 9 %}
+apiVersion: apps/v1beta1
+{% else %}
+apiVersion: apps/v1
+{% endif %}
+kind: Deployment
+metadata:
+  name: migration-ui
+  namespace: "{{ mig_namespace }}"
+  labels:
+    app: migration
+    service: migration-ui
+spec:
+  selector:
+     matchLabels:
+       app: migration
+       service: migration-ui
+  template:
+    metadata:
+      labels:
+        app: migration
+        service: migration-ui
+        app.kubernetes.io/part-of: openshift-migration
+{% if ui_config_configmap is defined %}
+        ui-config-name: {{ ui_config_configmap.env | k8s_config_resource_name }}
+{% endif %}
+    spec:
+      containers:
+        - name: mig-ui
+{% if http_proxy|length >0 or https_proxy|length >0 or no_proxy|length > 0 %}
+          env:
+{% else %}
+          env: null
+{% endif %}
+{% if no_proxy|length >0 %}
+          - name: NO_PROXY
+            value: {{ no_proxy }}
+{% endif %}
+{% if http_proxy|length >0 %}
+          - name: HTTP_PROXY
+            value: {{ http_proxy }}
+{% endif %}
+{% if https_proxy|length >0 %}
+          - name: HTTPS_PROXY
+            value: {{ https_proxy }}
+{% endif %}
+          image: "{{ mig_ui_image_fqin }}"
+          imagePullPolicy: "{{ image_pull_policy }}"
+          ports:
+            - containerPort: 9000
+              protocol: TCP
+          volumeMounts:
+            - name: "{{ mig_ui_configmap_name }}"
+              mountPath: /etc/mig-ui
+      volumes:
+        - name: "{{ mig_ui_configmap_name }}"
+          configMap:
+            name: "{{ mig_ui_configmap_name }}"

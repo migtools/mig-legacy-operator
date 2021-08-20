@@ -2,8 +2,8 @@
 - name: Verify
   hosts: localhost
   vars:
-    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'controller.yml'])) | from_yaml }}"
-    deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
+    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'migration_v1alpha1_migration_cr.yaml'])) | from_yaml }}"
+    deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/deploy"
   connection: local
   gather_facts: no
   tasks:
@@ -16,7 +16,7 @@
         name: '{{ custom_resource.metadata.name }}'
       register: cr
       until:
-        - "'latest' in (cr | json_query('resources[].spec.version'))"
+      - "'Reconciled' in (cr | json_query('resources[].status.phase'))"
       delay: 10
       retries: 24
     rescue:
@@ -49,9 +49,11 @@
     - name: get operator logs
       ignore_errors: yes
       failed_when: false
-      command: kubectl logs deployment/migration-operator -n {{ controller_namespace }}
+      command: kubectl logs deployment/{{ definition.metadata.name }} -n {{ controller_namespace }}
       environment:
         KUBECONFIG: '{{ lookup("env", "KUBECONFIG") }}'
+      vars:
+        definition: "{{ lookup('template', '/'.join([deploy_dir, 'operator.yaml'])) | from_yaml }}"
       register: log
 
     - debug: var=log.stdout_lines

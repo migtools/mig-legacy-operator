@@ -1,0 +1,158 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    control-plane: controller-manager
+    controller-tools.k8s.io: "1.0"
+  name: controller-manager-service
+  namespace: {{ mig_namespace }}
+spec:
+  ports:
+  - port: 443
+  selector:
+    control-plane: controller-manager
+    controller-tools.k8s.io: "1.0"
+---
+{% if lookup('k8s', cluster_info='version').kubernetes.minor|replace('+', '')|int < 9 %}
+apiVersion: apps/v1beta1
+{% else %}
+apiVersion: apps/v1
+{% endif %}
+kind: Deployment
+metadata:
+  labels:
+    app: migration
+    control-plane: controller-manager
+    controller-tools.k8s.io: "1.0"
+    app.kubernetes.io/part-of: openshift-migration
+{% if jaeger_enabled|bool %}
+  annotations:
+    sidecar.jaegertracing.io/inject: "true"
+{% endif %}
+  name: migration-controller
+  namespace: {{ mig_namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: migration
+      control-plane: controller-manager
+      controller-tools.k8s.io: "1.0"
+  serviceName: controller-manager-service
+  template:
+    metadata:
+      labels:
+        app: migration
+        control-plane: controller-manager
+        app.kubernetes.io/part-of: openshift-migration
+        controller-tools.k8s.io: "1.0"
+        controller_config_name: {{ controller_config_configmap.env | k8s_config_resource_name }}
+        cluster_config_name: {{ cluster_config_configmap.env | k8s_config_resource_name }}
+        webhook_secret_name: {{ webhook_secret.env | k8s_config_resource_name }}
+    spec:
+      serviceAccountName: migration-controller
+      containers:
+      - command:
+        - /manager
+        env:
+        - name: EXCLUDED_RESOURCES
+          value: {{ all_excluded_resources | join(',') }}
+{% if mig_pv_move_storageclasses|length >0 %}
+        - name: PV_MOVE_STORAGECLASSES
+          value: {{ mig_pv_move_storageclasses | join(',') }}
+{% endif %}
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ROLE
+          value: mtc
+        - name: SECRET_NAME
+          value: webhook-server-secret
+        - name: MIGRATION_REGISTRY_IMAGE
+          value: {{ migration_registry_image_fqin }}
+{% if http_proxy|length >0 %}
+        - name: HTTP_PROXY
+          value: {{ http_proxy }}
+{% endif %}
+{% if https_proxy|length >0 %}
+        - name: HTTPS_PROXY
+          value: {{ https_proxy }}
+{% endif %}
+{% if no_proxy|length >0 %}
+        - name: NO_PROXY
+          value: {{ no_proxy }}
+{% endif %}
+        envFrom:
+        - configMapRef:
+            name: migration-controller
+        image: {{ mig_controller_image_fqin }}
+        imagePullPolicy: "{{ image_pull_policy }}"
+        name: mtc
+        ports:
+        - containerPort: 9876
+          name: webhook-server
+          protocol: TCP
+        resources:
+          limits:
+            cpu: {{ mig_controller_limits_cpu }}
+            memory: {{ mig_controller_limits_memory }}
+          requests:
+            cpu: {{ mig_controller_requests_cpu }}
+            memory: {{ mig_controller_requests_memory }}
+        volumeMounts:
+        - mountPath: /tmp/cert
+          name: cert
+          readOnly: true
+      - command:
+        - /manager
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ROLE
+          value: discovery
+        - name: SECRET_NAME
+          value: webhook-server-secret
+{% if http_proxy|length >0 %}
+        - name: HTTP_PROXY
+          value: {{ http_proxy }}
+{% endif %}
+{% if https_proxy|length >0 %}
+        - name: HTTPS_PROXY
+          value: {{ https_proxy }}
+{% endif %}
+{% if no_proxy|length >0 %}
+        - name: NO_PROXY
+          value: {{ no_proxy }}
+{% endif %}
+        envFrom:
+        - configMapRef:
+            name: migration-controller
+        image: {{ mig_controller_image_fqin }}
+        imagePullPolicy: "{{ image_pull_policy }}"
+        name: discovery
+        ports:
+        - name: api
+          containerPort: 8080
+          name: webhook-server
+          protocol: TCP
+        resources:
+          limits:
+            cpu: {{ mig_controller_limits_cpu }}
+            memory: {{ mig_controller_limits_memory }}
+          requests:
+            cpu: {{ mig_controller_requests_cpu }}
+            memory: {{ mig_controller_requests_memory }}
+        volumeMounts:
+        - mountPath: {{ discovery_volume_path }}
+          name: discovery
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: webhook-server-secret
+      - name: discovery
+        emptyDir: {}

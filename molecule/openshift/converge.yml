@@ -4,9 +4,9 @@
   connection: local
   vars:
     ansible_python_interpreter: '{{ ansible_playbook_python }}'
-    deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy"
+    deploy_dir: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/molecule/deploy"
     pull_policy: Never
-    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'controller.yml'])) | from_yaml }}"
+    custom_resource: "{{ lookup('file', '/'.join([deploy_dir, 'migration_v1alpha1_migration_cr.yaml'])) | from_yaml }}"
     mig_namespace: "{{ namespace }}"
     migration_rsync_privileged: false
   tasks:

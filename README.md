@@ -9,7 +9,14 @@ This operator should be used for versions older than 4.6.
 For newer versions and documentation see [Crane Operator](https://github.com/konveyor/mig-operator)
 
 # Installation
+OpenShift 3.9 to 4.5:
 ```
 oc create -f https://raw.githubusercontent.com/konveyor/mig-legacy-operator/main/deploy/operator.yml
+oc create -f https://raw.githubusercontent.com/konveyor/mig-legacy-operator/main/deploy/controller.yml
+```
+
+OpenShift 3.7 to 4.5:
+```
+oc create -f https://raw.githubusercontent.com/konveyor/mig-legacy-operator/main/deploy/operator-3.7.yml
 oc create -f https://raw.githubusercontent.com/konveyor/mig-legacy-operator/main/deploy/controller.yml
 ```
