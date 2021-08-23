@@ -288,7 +288,7 @@ spec:
       serviceAccountName: migration-operator
       containers:
       - name: operator
-        image: quay.io/konveyor/mig-operator-container:release-1.5.1
+        image: quay.io/konveyor/mig-legacy-operator-container:release-1.5.1
         imagePullPolicy: Always
         volumeMounts:
         - mountPath: /tmp/ansible-operator/runner
