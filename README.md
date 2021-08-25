@@ -15,7 +15,7 @@ oc create -f https://raw.githubusercontent.com/konveyor/mig-legacy-operator/main
 oc create -f https://raw.githubusercontent.com/konveyor/mig-legacy-operator/main/deploy/controller.yml
 ```
 
-OpenShift 3.7 to 4.5:
+OpenShift 3.7:
 ```
 oc create -f https://raw.githubusercontent.com/konveyor/mig-legacy-operator/main/deploy/operator-3.7.yml
 oc create -f https://raw.githubusercontent.com/konveyor/mig-legacy-operator/main/deploy/controller.yml
