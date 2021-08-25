@@ -34,16 +34,16 @@
           phase: Reconciling
 
   - set_fact: ui_state="present"
-    when: migration_ui
+    when: "{{ migration_ui | default(false) }}"
 
   - set_fact: controller_state="present"
-    when: migration_controller
+    when: "{{ migration_controller | default(false) }}"
 
   - set_fact: velero_state="present"
-    when: migration_velero
+    when: "{{ migration_velero | default(false) }}"
 
   - set_fact: log_reader_state="present"
-    when: migration_log_reader
+    when: "{{ migration_log_reader | default(false) }}"
 
   - set_fact:
       all_excluded_resources: "{{ excluded_resources }}"
@@ -93,7 +93,7 @@
     register: infrastructures
     ignore_errors: yes
 
-  - when: migration_ui and cluster_version.resources|length > 0
+  - when: "{{ migration_ui | default(false) }} and cluster_version.resources|length > 0"
     block:
     # this will not be executed in a 3.x cluster
     - set_fact:
@@ -118,7 +118,7 @@
     - infrastructures.resources|length == 0
     - origin_three_dev is defined and origin_three_dev
 
-  - when: migration_velero
+  - when: "{{ migration_velero | default(false) }}"
     block:
     - name: Check if cloud-credentials secret exists already so we don't update it
       k8s_facts:
@@ -255,7 +255,7 @@
       definition: "{{ lookup('template', 'custom-rsync-anyuid.yml.j2') }}"
     when: "'security.openshift.io' in api_groups"
 
-  - when: migration_controller or migration_ui
+  - when: "{{ migration_controller | default(false) }} or {{ migration_ui | default(false) }}"
     block:
     - name: Set default CORS URLs
       set_fact:
@@ -291,7 +291,7 @@
     - (route_status.resources|length) == 0 or ui_state == "absent"
     - "'route.openshift.io' in api_groups"
 
-  - when: migration_ui
+  - when: "{{ migration_ui | default(false) }}"
     block:
     - name: Find generated route
       k8s_facts:
@@ -559,9 +559,9 @@
       name: discovery
       namespace: "{{ mig_namespace }}"
     register: discovery_route
-    when: migration_ui
+    when: "{{ migration_ui | default(false) }}"
 
-  - when: migration_ui and (discovery_route.resources|length) > 0
+  - when: "{{ migration_ui | default(false) }} and (discovery_route.resources|length) > 0"
     block:
     - set_fact:
         discovery_api_url: "https://{{discovery_route.resources[0].spec.host}}"
@@ -621,7 +621,7 @@
         state: "{{ ui_state }}"
         definition: "{{ lookup('template', 'ui.yml.j2') }}"
 
-  - when: migration_controller or migration_ui
+  - when: "{{ migration_controller | default(false) }} or {{ migration_ui | default(false) }}"
     name: "Set up host MigCluster"
     k8s:
       state: "present"
@@ -645,7 +645,7 @@
         namespace: "{{ mig_namespace }}"
       with_items: "{{ controller_replicasets.resources }}"
 
-  - when: not migration_ui
+  - when: "not {{ migration_ui | default(false) }}"
     block:
     - name: Find UI ReplicaSets
       k8s_facts:
