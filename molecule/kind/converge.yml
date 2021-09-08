@@ -5,7 +5,7 @@
   collections:
     - community.kubernetes
   vars:
-    image: quay.io/konveyor/mig-operator-container:release-1.5.1
+    image: quay.io/konveyor/mig-legacy-operator-container:release-1.5.2
   tasks:
     # using command so we don't need to install any dependencies
     - name: Get existing image hash
@@ -69,7 +69,7 @@
     - name: "Replace latest image with {{ test_image }}"
       replace:
         path: "{{ deploy_dir }}/operator.yaml"
-        regexp: '^(.*)image:( *)quay.io/ocpmigrate/mig-operator(.*)$'
+        regexp: '^(.*)image:( *)quay.io/ocpmigrate/mig-legacy-operator(.*)$'
         replace: "\\1image:\\2{{ test_image }}"
 
     - name: Make temp directory
