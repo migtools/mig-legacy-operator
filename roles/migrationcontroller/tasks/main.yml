@@ -161,17 +161,6 @@
       definition: "{{ lookup('template', 'custom-rsync-anyuid.yml.j2') }}"
     when: "'security.openshift.io' in api_groups"
 
-  - name: "Set up mig controller monitoring config"
-    k8s:
-      state: "{{ controller_state }}"
-      definition: "{{ lookup('template', item) | from_yaml }}"
-    when: "'monitoring.coreos.com' in lookup('k8s', cluster_info='api_groups')"
-    with_items:
-    - monitoring-servicemonitor.yml.j2
-    - monitoring-service.yml.j2
-    - monitoring-role.yml.j2
-    - monitoring-rolebinding.yml.j2
-
   - name: "Set up mig log reader"
     k8s:
       state: "{{ log_reader_state }}"
