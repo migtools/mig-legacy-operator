@@ -339,7 +339,7 @@ spec:
         - name: VELERO_AZURE_PLUGIN_REPO
           value: velero-plugin-for-microsoft-azure
         - name: VELERO_TAG
-          value: latest
+          value: konveyor-1.7.1
         - name: VELERO_RESTIC_RESTORE_HELPER_TAG
           value: latest
         - name: VELERO_PLUGIN_TAG
