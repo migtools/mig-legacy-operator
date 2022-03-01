@@ -1,0 +1,38 @@
+- hosts: localhost
+  vars_prompt:
+  - name: release
+    prompt: "Release"
+    private: no
+
+  tasks:
+  - name: Replace operator tags in molecule test
+    replace:
+      path:  "{{ item }}"
+      regexp: ':latest'
+      replace: ":release-{{ release }}"
+    with_items:
+    - "{{ playbook_dir }}/../molecule/kind/converge.yml"
+    - "{{ playbook_dir }}/../molecule/kind/molecule.yml"
+
+  - name: Replace operator tags in operator.yml
+    replace:
+      path:  "{{ playbook_dir }}/../deploy/operator.yml"
+      regexp: "{{ item }}"
+      replace: "release-{{ release }}"
+    with_items:
+    - latest
+    - konveyor-.*
+
+  - name: Replace operator version in molecule test
+    replace:
+      path:  "{{ item }}"
+      regexp: 'latest'
+      replace: "{{ release }}"
+    with_items:
+    - "{{ playbook_dir }}/../molecule/kind/verify.yml"
+
+  - name: Replace version in defaults/main.yml
+    replace:
+      path: "{{ playbook_dir }}/../roles/migrationcontroller/defaults/main.yml"
+      regexp: 'mig_operator_version:.*'
+      replace: "mig_operator_version: \"{{ release }}\""
