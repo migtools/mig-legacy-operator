@@ -83,6 +83,12 @@
         src: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/deploy/operator.yml"
         dest: "{{ tmp_dir.path }}/operator.yml"
 
+    - name: Fix operator.yml apis for kind
+      replace:
+        path: "{{ tmp_dir.path }}/operator.yml"
+        regexp: "authorization.openshift.io"
+        replace: "rbac.authorization.k8s.io"
+
     - name: Update Pull Policy so we use the image we just finished building
       lineinfile:
         path: "{{ tmp_dir.path }}/operator.yml"
