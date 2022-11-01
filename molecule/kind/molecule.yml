@@ -34,7 +34,7 @@ provisioner:
         migration_namespace: ${TEST_MIGRATION_NAMESPACE:-openshift-migration}
         namespace: ${TEST_OPERATOR_NAMESPACE:-openshift-migration}
         kubeconfig_file: ${MOLECULE_EPHEMERAL_DIRECTORY}/kubeconfig
-        test_image: ${REPLACE_IMAGE:-quay.io/konveyor/mig-legacy-operator-container:release-1.7.5}
+        test_image: ${REPLACE_IMAGE:-quay.io/konveyor/mig-legacy-operator-container:release-1.7.6}
     host_vars:
       localhost:
         ansible_python_interpreter: '{{ ansible_playbook_python }}'
@@ -47,9 +47,6 @@ provisioner:
     KIND_PORT: '${TEST_CLUSTER_PORT:-10443}'
 verifier:
   name: ansible
-  lint: |
-    set -e
-    ansible-lint
 scenario:
   name: kind
   test_sequence:
