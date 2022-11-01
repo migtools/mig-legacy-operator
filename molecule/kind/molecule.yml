@@ -47,9 +47,6 @@ provisioner:
     KIND_PORT: '${TEST_CLUSTER_PORT:-10443}'
 verifier:
   name: ansible
-  lint: |
-    set -e
-    ansible-lint
 scenario:
   name: kind
   test_sequence:
