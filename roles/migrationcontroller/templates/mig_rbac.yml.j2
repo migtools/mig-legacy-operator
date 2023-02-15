@@ -68,7 +68,7 @@ rules:
   verbs:
   - use
   resourceNames:
-{% if migration_rsync_privileged %}
+{% if migration_rsync_privileged or migration_rsync_super_privileged %}
   - privileged
 {% else %}
   - rsync-anyuid
