@@ -9,7 +9,7 @@ rsync_transfer_image: "{{ registry }}/{{ project }}/{{ rsync_transfer_repo }}"
 rsync_transfer_repo: "{{ lookup( 'env', 'RSYNC_TRANSFER_REPO') }}"
 rsync_transfer_version: "{{ snapshot_tag | default(lookup( 'env', 'RSYNC_TRANSFER_TAG')) }}"
 rsync_transfer_image_fqin: "{{ rsync_transfer_image }}:{{ rsync_transfer_version }}"
-mig_operator_version: "1.7.8"
+mig_operator_version: "1.7.9"
 mig_namespace: "{{ lookup( 'env', 'WATCH_NAMESPACE') | default('openshift-migration') }}"
 log_reader_state: absent
 mig_log_reader_repo: "{{ lookup( 'env', 'MIG_LOG_READER_REPO') }}"
