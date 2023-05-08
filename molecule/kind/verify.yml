@@ -16,7 +16,7 @@
         name: '{{ custom_resource.metadata.name }}'
       register: cr
       until:
-        - "'1.7.9' in (cr | json_query('resources[].spec.version'))"
+        - "'1.7.10' in (cr | json_query('resources[].spec.version'))"
       delay: 10
       retries: 24
     rescue:
